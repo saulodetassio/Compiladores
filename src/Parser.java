@@ -3,8 +3,8 @@ public class Parser {
     private Token currentToken;
 
     public Parser(byte[] input) {
-        this.scan = new Scanner(input);
-        this.currentToken = scan.nextToken();
+        scan = new Scanner(input);
+        currentToken = scan.nextToken();
     }
 
     private void nextToken() {
@@ -15,7 +15,37 @@ public class Parser {
         if (currentToken.type == t) {
             nextToken();
         } else {
-            throw new Error("syntax error: esperado " + t + ", encontrado " + currentToken.type);
+            throw new Error("syntax error");
+        }
+    }
+
+    public void parse() {
+        letStatement();
+    }
+
+    private void letStatement() {
+        match(TokenType.LET);
+        String id = currentToken.lexeme;
+        match(TokenType.IDENT);
+        match(TokenType.EQ);
+        expr();
+        System.out.println("pop " + id);
+        match(TokenType.SEMICOLON);
+    }
+
+    private void expr() {
+        term();
+        oper();
+    }
+
+    private void term() {
+        if (currentToken.type == TokenType.NUMBER) {
+            number();
+        } else if (currentToken.type == TokenType.IDENT) {
+            System.out.println("push " + currentToken.lexeme);
+            match(TokenType.IDENT);
+        } else {
+            throw new Error("syntax error");
         }
     }
 
@@ -27,27 +57,14 @@ public class Parser {
     private void oper() {
         if (currentToken.type == TokenType.PLUS) {
             match(TokenType.PLUS);
-            number();
+            term();
             System.out.println("add");
             oper();
         } else if (currentToken.type == TokenType.MINUS) {
             match(TokenType.MINUS);
-            number();
+            term();
             System.out.println("sub");
             oper();
-        }
-        // caso contrário: oper -> ε
-    }
-
-    private void expr() {
-        number();
-        oper();
-    }
-
-    public void parse() {
-        expr();
-        if (currentToken.type != TokenType.EOF) {
-            throw new Error("syntax error: fim inesperado");
         }
     }
 }
