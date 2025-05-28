@@ -15,9 +15,14 @@ public class Scanner {
     }
 
     private void advance() {
-        char ch = peek();
-        if (ch != '\0') {
+        if (peek() != '\0') {
             current++;
+        }
+    }
+
+    private void skipWhitespace() {
+        while (Character.isWhitespace(peek())) {
+            advance();
         }
     }
 
@@ -31,12 +36,9 @@ public class Scanner {
     }
 
     public Token nextToken() {
-        char ch = peek();
+        skipWhitespace();
 
-        if (Character.isWhitespace(ch)) {
-            advance();
-            return nextToken(); // ignora espaços
-        }
+        char ch = peek();
 
         if (ch == '0') {
             advance();
@@ -58,16 +60,5 @@ public class Scanner {
                 throw new Error("lexical error at '" + ch + "'");
         }
     }
-
-    // Para teste rápido
-    public static void main(String[] args) {
-        String input = "289-85+0+69";
-        Scanner scan = new Scanner(input.getBytes());
-
-        Token token;
-        do {
-            token = scan.nextToken();
-            System.out.println(token);
-        } while (token.type != TokenType.EOF);
-    }
 }
+

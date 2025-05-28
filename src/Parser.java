@@ -11,21 +11,17 @@ public class Parser {
         currentToken = scan.nextToken();
     }
 
-    private void match(TokenType type) {
-        if (currentToken.type == type) {
+    private void match(TokenType t) {
+        if (currentToken.type == t) {
             nextToken();
         } else {
-            throw new Error("syntax error: esperado " + type + ", encontrado " + currentToken.type);
+            throw new Error("syntax error: esperado " + t + ", encontrado " + currentToken.type);
         }
     }
 
     private void number() {
-        if (currentToken.type == TokenType.NUMBER) {
-            System.out.println("push " + currentToken.lexeme);
-            match(TokenType.NUMBER);
-        } else {
-            throw new Error("syntax error: número esperado");
-        }
+        System.out.println("push " + currentToken.lexeme);
+        match(TokenType.NUMBER);
     }
 
     private void oper() {
@@ -40,6 +36,7 @@ public class Parser {
             System.out.println("sub");
             oper();
         }
+        // caso contrário: oper -> ε
     }
 
     private void expr() {
@@ -54,4 +51,3 @@ public class Parser {
         }
     }
 }
-

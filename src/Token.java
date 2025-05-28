@@ -7,7 +7,6 @@ public class Token {
         this.lexeme = lexeme;
     }
 
-    @Override
     public String toString() {
         return "<" + type + ">" + lexeme + "</" + type + ">";
     }
