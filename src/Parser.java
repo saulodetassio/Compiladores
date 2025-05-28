@@ -1,31 +1,46 @@
 public class Parser {
-    private byte[] input;
-    private int current;
+    private Scanner scan;
+    private char currentToken;
 
     public Parser(byte[] input) {
-        this.input = input;
-        this.current = 0;
+        this.scan = new Scanner(input);
+        this.currentToken = scan.nextToken();
     }
 
-    public void parse() {
-        expr();
-        if (peek() != '\0') {
-            throw new Error("syntax error: extra characters after expression");
-        }
+    private void nextToken() {
+        currentToken = scan.nextToken();
     }
 
-    private char peek() {
-        if (current < input.length)
-            return (char) input[current];
-        return '\0';
-    }
-
-    private void match(char c) {
-        if (c == peek()) {
-            current++;
+    private void match(char t) {
+        if (currentToken == t) {
+            nextToken();
         } else {
-            throw new Error("syntax error: expected '" + c + "', found '" + peek() + "'");
+            throw new Error("syntax error: esperado '" + t + "', encontrado '" + currentToken + "'");
         }
+    }
+
+    private void digit() {
+        if (Character.isDigit(currentToken)) {
+            System.out.println("push " + currentToken);
+            match(currentToken); // avança após consumir o dígito
+        } else {
+            throw new Error("syntax error: dígito esperado");
+        }
+    }
+
+    private void oper() {
+        if (currentToken == '+') {
+            match('+');
+            digit();
+            System.out.println("add");
+            oper();
+        } else if (currentToken == '-') {
+            match('-');
+            digit();
+            System.out.println("sub");
+            oper();
+        }
+        // ε (vazio) está implícito — se não for + nem -, retorna
     }
 
     private void expr() {
@@ -33,30 +48,7 @@ public class Parser {
         oper();
     }
 
-    private void digit() {
-        if (Character.isDigit(peek())) {
-            System.out.println("push " + peek());
-            match(peek());
-        } else {
-            throw new Error("syntax error: expected digit");
-        }
-    }
-
-    private void oper() {
-        if (peek() == '+') {
-            match('+');
-            digit();
-            System.out.println("add");
-            oper();
-        } else if (peek() == '-') {
-            match('-');
-            digit();
-            System.out.println("sub");
-            oper();
-        } else if (peek() == '\0') {
-            return;
-        } else {
-            throw new Error("syntax error: unexpected character '" + peek() + "'");
-        }
+    public void parse() {
+        expr();
     }
 }
