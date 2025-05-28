@@ -1,13 +1,14 @@
 public enum TokenType {
-    // Operadores
     PLUS, MINUS, EQ, SEMICOLON,
 
-    // Literais
-    NUMBER, IDENT,
+    // Literals.
+    NUMBER,
+    IDENT,
 
-    // Palavras-chave
+    // Keywords.
     LET,
+    PRINT,
 
-    // Fim de arquivo
     EOF
 }
+

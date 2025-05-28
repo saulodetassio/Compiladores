@@ -2,7 +2,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Scanner {
-    private byte[] input;
+
+    private final byte[] input;
     private int current = 0;
 
     private static final Map<String, TokenType> keywords;
@@ -10,31 +11,41 @@ public class Scanner {
     static {
         keywords = new HashMap<>();
         keywords.put("let", TokenType.LET);
+        keywords.put("print", TokenType.PRINT);
     }
 
     public Scanner(byte[] input) {
         this.input = input;
     }
 
+    private boolean isAtEnd() {
+        return current >= input.length;
+    }
+
     private char peek() {
-        if (current < input.length) return (char) input[current];
-        return '\0';
+        if (isAtEnd()) return '\0';
+        return (char) input[current];
     }
 
     private void advance() {
-        if (peek() != '\0') current++;
+        current++;
     }
 
     private void skipWhitespace() {
-        char ch = peek();
-        while (ch == ' ' || ch == '\r' || ch == '\t' || ch == '\n') {
-            advance();
-            ch = peek();
+        while (!isAtEnd()) {
+            char ch = peek();
+            if (ch == ' ' || ch == '\r' || ch == '\t' || ch == '\n') {
+                advance();
+            } else {
+                break;
+            }
         }
     }
 
     private boolean isAlpha(char c) {
-        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+        return (c >= 'a' && c <= 'z') ||
+               (c >= 'A' && c <= 'Z') ||
+                c == '_';
     }
 
     private boolean isAlphaNumeric(char c) {
@@ -43,7 +54,9 @@ public class Scanner {
 
     private Token number() {
         int start = current;
-        while (Character.isDigit(peek())) advance();
+        while (Character.isDigit(peek())) {
+            advance();
+        }
         String n = new String(input, start, current - start);
         return new Token(TokenType.NUMBER, n);
     }
@@ -51,6 +64,7 @@ public class Scanner {
     private Token identifier() {
         int start = current;
         while (isAlphaNumeric(peek())) advance();
+
         String id = new String(input, start, current - start);
         TokenType type = keywords.getOrDefault(id, TokenType.IDENT);
         return new Token(type, id);
@@ -58,12 +72,20 @@ public class Scanner {
 
     public Token nextToken() {
         skipWhitespace();
+
         char ch = peek();
 
-        if (ch == '\0') return new Token(TokenType.EOF, "EOF");
+        if (ch == '\0') {
+            return new Token(TokenType.EOF, "EOF");
+        }
 
-        if (Character.isDigit(ch)) return number();
-        if (isAlpha(ch)) return identifier();
+        if (Character.isDigit(ch)) {
+            return number();
+        }
+
+        if (isAlpha(ch)) {
+            return identifier();
+        }
 
         switch (ch) {
             case '+':
@@ -83,5 +105,3 @@ public class Scanner {
         }
     }
 }
-
-
