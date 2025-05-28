@@ -1,14 +1,14 @@
 public class Token {
-    public final TokenType type;
-    public final String value;
+    final TokenType type;
+    final String lexeme;
 
-    public Token(TokenType type, String value) {
+    public Token(TokenType type, String lexeme) {
         this.type = type;
-        this.value = value;
+        this.lexeme = lexeme;
     }
 
     @Override
     public String toString() {
-        return "Token(" + type + ", " + value + ")";
+        return "<" + type + ">" + lexeme + "</" + type + ">";
     }
 }

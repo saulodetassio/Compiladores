@@ -21,34 +21,53 @@ public class Scanner {
         }
     }
 
-    public char nextToken() {
+    private Token number() {
+        int start = current;
+        while (Character.isDigit(peek())) {
+            advance();
+        }
+        String n = new String(input, start, current - start);
+        return new Token(TokenType.NUMBER, n);
+    }
+
+    public Token nextToken() {
         char ch = peek();
 
-        if (Character.isDigit(ch)) {
+        if (Character.isWhitespace(ch)) {
             advance();
-            return ch;
+            return nextToken(); // ignora espaços
+        }
+
+        if (ch == '0') {
+            advance();
+            return new Token(TokenType.NUMBER, "0");
+        } else if (Character.isDigit(ch)) {
+            return number();
         }
 
         switch (ch) {
             case '+':
+                advance();
+                return new Token(TokenType.PLUS, "+");
             case '-':
                 advance();
-                return ch;
+                return new Token(TokenType.MINUS, "-");
+            case '\0':
+                return new Token(TokenType.EOF, "EOF");
             default:
-                break;
+                throw new Error("lexical error at '" + ch + "'");
         }
-
-        return '\0'; // fim da entrada ou caractere inválido
     }
 
-    // Para teste individual (opcional)
+    // Para teste rápido
     public static void main(String[] args) {
-        String input = "4-8+6";
+        String input = "289-85+0+69";
         Scanner scan = new Scanner(input.getBytes());
-        System.out.println(scan.nextToken());
-        System.out.println(scan.nextToken());
-        System.out.println(scan.nextToken());
-        System.out.println(scan.nextToken());
-        System.out.println(scan.nextToken());
+
+        Token token;
+        do {
+            token = scan.nextToken();
+            System.out.println(token);
+        } while (token.type != TokenType.EOF);
     }
 }
